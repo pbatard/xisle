@@ -1,20 +1,25 @@
 #include <windows.h>
 #include <stdlib.h>
 #include <string.h>
+#include <iostream>
 
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.system.h>
 #include <winrt/windows.ui.xaml.hosting.h>
+#include <winrt/windows.ui.xaml.markup.h>
 #include <winrt/windows.ui.xaml.controls.h>
 #include <winrt/Windows.ui.xaml.media.h>
 #include <winrt/Windows.ui.xaml.controls.primitives.h>
 #include <windows.ui.xaml.hosting.desktopwindowxamlsource.h>
+using namespace winrt::Windows::UI::Xaml;
 
 using namespace winrt;
+using namespace std;
 using namespace Windows::Foundation::Numerics;
 using namespace Windows::UI;
 using namespace Windows::UI::Composition;
 using namespace Windows::UI::Xaml::Hosting;
+using namespace Windows::UI::Xaml::Markup;
 using namespace Windows::UI::Xaml::Controls::Primitives;
 
 LRESULT CALLBACK WindowProc(HWND, UINT, WPARAM, LPARAM);
@@ -22,6 +27,26 @@ LRESULT CALLBACK WindowProc(HWND, UINT, WPARAM, LPARAM);
 HWND _hWnd;
 HWND _childhWnd;
 HINSTANCE _hInstance;
+
+DependencyObject GetUIElement(DependencyObject root, const std::wstring& sName)
+{
+    if (root == nullptr)
+        return nullptr;
+    const int nNbChildren = Media::VisualTreeHelper::GetChildrenCount(root);
+    for (int i = 0; i < nNbChildren; i++) {
+        DependencyObject childObject = Media::VisualTreeHelper::GetChild(root, i);
+        auto fe = childObject.try_as<FrameworkElement>();
+        if (childObject != nullptr && fe.Name() == sName) {
+            return childObject;
+        } else {
+            DependencyObject childInSubtree = GetUIElement(childObject, sName);
+            if (childInSubtree != nullptr) {
+                return childInSubtree;
+            }
+        }
+    }
+    return nullptr;
+}
 
 int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nCmdShow)
 {
@@ -87,28 +112,31 @@ int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     SetWindowPos(hWndXamlIsland, nullptr, 0, 0, 800, 400, SWP_SHOWWINDOW);
 
     // Create the XAML content.
-    Windows::UI::Xaml::Controls::StackPanel xamlContainer;
-    xamlContainer.Background(Windows::UI::Xaml::Media::SolidColorBrush{ Windows::UI::Colors::LightGray() });
-    xamlContainer.HorizontalAlignment(Windows::UI::Xaml::HorizontalAlignment::Stretch);
+    Windows::UI::Xaml::Controls::Grid xamlContainer;
 
-    Windows::UI::Xaml::Controls::Grid grid;
+    winrt::hstring xaml =
+        L"<Grid Background=\"{ThemeResource SystemAccentColorLight1}\" Name=\"Grid_Main\" xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\">"
+        L"  <StackPanel Name=\"Stack_Main\" HorizontalAlignment=\"Stretch\" Margin=\"20\">"
+        L"    <ComboBox Name=\"cb1\" FontSize=\"16\" Width=\"200\" Margin=\"5\"/>"
+        L"    <ComboBox Name=\"cb2\" FontSize=\"16\" Width=\"100\" Margin=\"5\"/>"
+        L"  </StackPanel>"
+        L"</Grid>";
+    auto content = Windows::UI::Xaml::Markup::XamlReader::Load(xaml);
+    xamlContainer.Children().Append(content.as<winrt::Windows::UI::Xaml::UIElement>());
 
-    // Create a ComboBox with 2 items and select the first one as default
-    Windows::UI::Xaml::Controls::ComboBox cb1;
-    cb1.FontSize(16);
-    cb1.Width(200);
-    cb1.Items().Append(winrt::box_value(L"Item 1"));
-    cb1.Items().Append(winrt::box_value(L"Item 2"));
-    cb1.SelectedIndex(0);
-    xamlContainer.Children().Append(cb1);
+    Windows::UI::Xaml::Controls::ComboBox cb1 = GetUIElement(xamlContainer, L"cb1").as<Windows::UI::Xaml::Controls::ComboBox>();
+    if (cb1 != nullptr) {
+        cb1.Items().Append(winrt::box_value(L"Item 1"));
+        cb1.Items().Append(winrt::box_value(L"Item 2"));
+        cb1.SelectedIndex(0);
+    }
 
-    Windows::UI::Xaml::Controls::ComboBox cb2;
-    cb2.FontSize(16);
-    cb2.Items().Append(winrt::box_value(L"Yolo 1"));
-    cb2.Items().Append(winrt::box_value(L"Yolo 2"));
-    cb2.SelectedIndex(1);
-    cb2.HorizontalContentAlignment(Windows::UI::Xaml::HorizontalAlignment::Left);
-    xamlContainer.Children().Append(cb2);
+    Windows::UI::Xaml::Controls::ComboBox cb2 = GetUIElement(xamlContainer, L"cb2").as<Windows::UI::Xaml::Controls::ComboBox>();
+    if (cb2 != nullptr) {
+        cb2.Items().Append(winrt::box_value(L"Yolo 1"));
+        cb2.Items().Append(winrt::box_value(L"Yolo 2"));
+        cb2.SelectedIndex(1);
+    }
 
     xamlContainer.UpdateLayout();
     desktopSource.Content(xamlContainer);

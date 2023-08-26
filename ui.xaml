@@ -1,0 +1,8 @@
+<Grid xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      Background="{ThemeResource SystemAccentColorLight1}"
+      Name="Grid_Main">
+  <StackPanel Name="Stack_Main" HorizontalAlignment="Stretch" Margin="20">
+    <ComboBox Name="cb1" FontSize="16" Width="200" Margin="5"/>
+    <ComboBox Name="cb2" FontSize="16" Width="100" Margin="5"/>
+  </StackPanel>
+</Grid>

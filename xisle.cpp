@@ -1,7 +1,26 @@
+/*
+ * X-Isle - An XAML Islands integration test for Rufus UI
+ * Copyright © 2022-2023 Pete Batard <pete@akeo.ie>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include <windows.h>
 #include <stdlib.h>
 #include <string.h>
 #include <iostream>
+#include "resource.h"
 
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.system.h>
@@ -11,10 +30,10 @@
 #include <winrt/Windows.ui.xaml.media.h>
 #include <winrt/Windows.ui.xaml.controls.primitives.h>
 #include <windows.ui.xaml.hosting.desktopwindowxamlsource.h>
-using namespace winrt::Windows::UI::Xaml;
 
-using namespace winrt;
 using namespace std;
+using namespace winrt;
+using namespace winrt::Windows::UI::Xaml;
 using namespace Windows::Foundation::Numerics;
 using namespace Windows::UI;
 using namespace Windows::UI::Composition;
@@ -46,6 +65,24 @@ DependencyObject GetUIElement(DependencyObject root, const std::wstring& sName)
         }
     }
     return nullptr;
+}
+
+void DBG(std::string str)
+{
+    OutputDebugStringA(str.c_str());
+    OutputDebugStringA("\r\n");
+}
+
+void DBG(std::wstring str)
+{
+    OutputDebugStringW(str.c_str());
+    OutputDebugStringA("\r\n");
+}
+
+void DBG(winrt::hstring str)
+{
+    OutputDebugStringW(str.c_str());
+    OutputDebugStringA("\r\n");
 }
 
 int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nCmdShow)
@@ -114,13 +151,12 @@ int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     // Create the XAML content.
     Windows::UI::Xaml::Controls::Grid xamlContainer;
 
-    winrt::hstring xaml =
-        L"<Grid Background=\"{ThemeResource SystemAccentColorLight1}\" Name=\"Grid_Main\" xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\">"
-        L"  <StackPanel Name=\"Stack_Main\" HorizontalAlignment=\"Stretch\" Margin=\"20\">"
-        L"    <ComboBox Name=\"cb1\" FontSize=\"16\" Width=\"200\" Margin=\"5\"/>"
-        L"    <ComboBox Name=\"cb2\" FontSize=\"16\" Width=\"100\" Margin=\"5\"/>"
-        L"  </StackPanel>"
-        L"</Grid>";
+    HRSRC xamlResource = ::FindResource(NULL, MAKEINTRESOURCE(IDR_XAML), RT_RCDATA);
+    HGLOBAL xamlResourceData = ::LoadResource(NULL, xamlResource);
+    char* strXaml = (char*)::LockResource(xamlResourceData);
+    winrt::hstring xaml(wstring(strXaml, strXaml + strlen(strXaml)));
+    ::FreeResource(xamlResourceData);
+
     auto content = Windows::UI::Xaml::Markup::XamlReader::Load(xaml);
     xamlContainer.Children().Append(content.as<winrt::Windows::UI::Xaml::UIElement>());
 

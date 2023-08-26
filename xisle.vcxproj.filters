@@ -21,10 +21,10 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Resource.h">
+    <ClInclude Include="xisle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="xisle.h">
+    <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -53,5 +53,10 @@
     <Manifest Include="app.manifest">
       <Filter>Resource Files</Filter>
     </Manifest>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="ui.xaml">
+      <Filter>Resource Files</Filter>
+    </Page>
   </ItemGroup>
 </Project>

@@ -5,7 +5,9 @@
 - [x] Can produce a standalone executable runs on a __clean__ Windows 10 install without requiring any other dependencies
 - [x] Can load XAML from string and instantiate XAML elements for access
 - [x] Can load XAML from text file resource
-- [ ] Can replicate all the current UI elements from Rufus:
+- [x] Can edit XAML content with VS2022 XAML Designer
+- [ ] Can resize Window according to content
+- [ ] Can replicate all the current UI elements from Rufus, including button toolbar
   - [ ] Can replicate the button toolbars
   - [ ] Can replicate a status bar
   - [ ] Can replicate split buttons

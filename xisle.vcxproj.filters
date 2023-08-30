@@ -54,9 +54,4 @@
       <Filter>Resource Files</Filter>
     </Manifest>
   </ItemGroup>
-  <ItemGroup>
-    <Page Include="ui.xaml">
-      <Filter>Resource Files</Filter>
-    </Page>
-  </ItemGroup>
 </Project>

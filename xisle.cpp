@@ -153,8 +153,13 @@ int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
     HRSRC xamlResource = ::FindResource(NULL, MAKEINTRESOURCE(IDR_XAML), RT_RCDATA);
     HGLOBAL xamlResourceData = ::LoadResource(NULL, xamlResource);
-    char* strXaml = (char*)::LockResource(xamlResourceData);
-    winrt::hstring xaml(wstring(strXaml, strXaml + strlen(strXaml)));
+    char* xamlStr = (char*)::LockResource(xamlResourceData);
+    // NB: Only works if there's a single <Grid> element
+    char* xamlStart = strstr(xamlStr, "<Grid");
+    char* xamlEnd = strstr(xamlStr, "</Grid>");
+    xamlEnd = &xamlEnd[7];
+    DBG(wstring(xamlStart, xamlEnd));
+    winrt::hstring xaml(wstring(xamlStart, xamlEnd));
     ::FreeResource(xamlResourceData);
 
     auto content = Windows::UI::Xaml::Markup::XamlReader::Load(xaml);

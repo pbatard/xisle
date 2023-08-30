@@ -1,0 +1,16 @@
+﻿<Page
+    x:Class="ui.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" d:DesignHeight="640" d:DesignWidth="480">
+
+    <Grid xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      Background="{ThemeResource SystemAccentColorLight1}"
+      Name="Grid_Main">
+        <StackPanel Name="Stack_Main" HorizontalAlignment="Stretch" Margin="20">
+            <ComboBox Name="cb1" FontSize="16" Width="200" Margin="5"/>
+            <ComboBox Name="cb2" FontSize="16" Width="100" Margin="5"/>
+        </StackPanel>
+    </Grid>
+</Page>
